@@ -1,0 +1,14 @@
+#
+# Overrides the automatic import "guesses" with correct data for any given address
+#
+# Address can either be a single address, or a range (inclusive)
+#
+# Can also specify a data type for data in a range (for labling)
+
+# Sets the reset vectors to pointers
+- addr: [0x80FFE0, 0x80FFFF]
+  type: Pointer
+
+- addr: [0x918014, 0x91804B]
+  type: Pointer
+  db: 0x91

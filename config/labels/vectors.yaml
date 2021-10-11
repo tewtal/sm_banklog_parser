@@ -1,0 +1,7 @@
+# Native mode vectors
+- { addr: 0x808573, name: Native_BRK, type: Subroutine }
+- { addr: 0x809583, name: Native_NMI, type: Subroutine }
+- { addr: 0x80986A, name: Native_IRQ, type: Subroutine }
+
+# Emulation mode vectors
+- { addr: 0x80841C, name: Emulation_RESET, type: Subroutine }

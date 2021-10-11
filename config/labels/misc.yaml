@@ -1,0 +1,45 @@
+# labels
+#
+
+# These are fixes to insert labels off-by one from access in code
+# that will be used by the label retargeting that offsets accesses by up to 2 bytes.
+# They are needed because otherwise labels would fall in the middle of data.
+
+- addr: 0x8BE45F
+  name: TBL_8BE45F
+  type: DataTable
+
+- addr: 0xA28187
+  name: EnemySpeedLin
+  type: DataTable
+
+- addr: 0xA2818B
+  name: EnemySpeedLinHi
+  type: DataTable
+
+- addr: 0xA2838F
+  name: EnemySpeedQuad
+  type: DataTable
+
+- addr: 0xA28393
+  name: EnemySpeedQuadHi
+  type: DataTable
+
+- addr: 0xA7902F
+  name: TBL_A7902F
+  type: DataTable
+
+# Blocked labels that can't be used by the label assigner since this data
+# doesn't exist in the rom.
+
+- addr: 0xB88000
+  name: BLK_B88000
+  type: Blocked
+
+- addr: 0xB88004
+  name: BLK_B88004
+  type: Blocked
+
+- addr: 0xB88008
+  name: BLK_B88004
+  type: Blocked
