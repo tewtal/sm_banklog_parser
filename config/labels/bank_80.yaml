@@ -1,0 +1,15 @@
+- { addr: 0x808008, name: DisableAudio }
+
+# Upload to APU
+- { addr: 0x80800A, name: UploadToAPUHard }
+- { addr: 0x808024, name: UploadToAPULong }
+- { addr: 0x808028, name: UploadToAPU }
+- { addr: 0x80802F, name: .start }
+
+# ;;; $8059: Send APU data ;;;
+- { addr: 0x808059, name: SendToAPU }
+- { addr: 0x808063, name: .waitForResponse }
+- { addr: 0x808077, name: .hangForever }
+- { addr: 0x808079, name: .gotResponse }
+
+

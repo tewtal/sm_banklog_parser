@@ -127,7 +127,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                otherwise it will deadlock. */
             let labels = LABELS.lock().unwrap();
             if labels.contains_key(addr) {
-                let _ = writeln!(output_file, "{}:", labels[addr].name);
+                let _ = writeln!(output_file, "{}{}", labels[addr].name, if labels[addr].name.starts_with(".") { "" } else { ":" });
             }
         }
 
