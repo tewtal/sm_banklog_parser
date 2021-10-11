@@ -47,30 +47,26 @@ impl Code {
                 let labels = label::LABELS.lock().unwrap();
 
                 let label = {
-                    if label_addr > 0x808000 {
-                        if labels.contains_key(&label_addr) {
-                            (Some(&labels[&label_addr]), 0)
-                        } else if self.opcode.addr_mode != AddrMode::Relative &&
-                                  self.opcode.addr_mode != AddrMode::RelativeLong &&
-                                  self.opcode.name != "JSR" &&
-                                  self.opcode.name != "JSL"
-                            {
-                            if labels.contains_key(&(label_addr - 1)) {
-                                (Some(&labels[&(label_addr - 1)]), -1)
-                            } else if labels.contains_key(&(label_addr + 1)) {
-                                (Some(&labels[&(label_addr + 1)]), 1)
-                            } else if labels.contains_key(&(label_addr - 2)) {
-                                (Some(&labels[&(label_addr - 2)]), -2)
-                            } else if labels.contains_key(&(label_addr + 2)) {
-                                (Some(&labels[&(label_addr + 2)]), 2)
-                            } else {
-                                (None, 0)                         
-                            }
+                    if labels.contains_key(&label_addr) {
+                        (Some(&labels[&label_addr]), 0)
+                    } else if self.opcode.addr_mode != AddrMode::Relative &&
+                                self.opcode.addr_mode != AddrMode::RelativeLong &&
+                                self.opcode.name != "JSR" &&
+                                self.opcode.name != "JSL"
+                        {
+                        if labels.contains_key(&(label_addr - 1)) {
+                            (Some(&labels[&(label_addr - 1)]), -1)
+                        } else if labels.contains_key(&(label_addr + 1)) {
+                            (Some(&labels[&(label_addr + 1)]), 1)
+                        } else if labels.contains_key(&(label_addr - 2)) {
+                            (Some(&labels[&(label_addr - 2)]), -2)
+                        } else if labels.contains_key(&(label_addr + 2)) {
+                            (Some(&labels[&(label_addr + 2)]), 2)
                         } else {
-                            (None, 0)    
+                            (None, 0)                         
                         }
                     } else {
-                        (None, 0)
+                        (None, 0)    
                     }
                 };
 

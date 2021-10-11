@@ -39,11 +39,13 @@ impl Data {
                 DataVal::DL(_) => ("dl", 3)
             };
 
-            let labels = LABELS.lock().unwrap();
+            let mut labels = LABELS.lock().unwrap();
 
             if !first_cmd && labels.contains_key(&cur_pc) {
                 /* There's a label for this address, add it into the data */
                 output.push_str(&format!(" : {}: ", labels[&cur_pc].name));
+                let mut lbl = labels.get_mut(&cur_pc).unwrap();
+                lbl.assigned = true;
                 first_cmd = true;
                 first_val = true;
                 last_data_cmd = "";

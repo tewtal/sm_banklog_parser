@@ -14,6 +14,8 @@ use code::{Code, ArgType};
 use label::LABELS;
 use line::Line;
 
+use crate::label::LabelType;
+
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
@@ -104,6 +106,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut output_file = File::create("./asm/main.asm").unwrap();
     let _ = writeln!(output_file, "lorom");
+    let _ = writeln!(output_file, "incsrc labels.asm");
     for group in 0x80..0xE0 {
         let _ = writeln!(output_file, "incsrc bank_{:02X}.asm", group);
     }
@@ -125,15 +128,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         {
             /* Make a temporary scope here so that the labels mutex lock falls out of scope before the rest of the code,
                otherwise it will deadlock. */
-            let labels = LABELS.lock().unwrap();
+            let mut labels = LABELS.lock().unwrap();
             if labels.contains_key(addr) {
                 let _ = writeln!(output_file, "{}{}", labels[addr].name, if labels[addr].name.starts_with(".") { "" } else { ":" });
+                let mut label = labels.get_mut(addr).unwrap();
+                label.assigned = true;
             }
         }
 
         for addr_line in line {
             let _ = writeln!(output_file, "{}", addr_line.to_string(&config));
         }
+
+    }
+
+    let labels = LABELS.lock().unwrap();
+    output_file = File::create("./asm/labels.asm").unwrap();
+    for (a, l) in labels.iter().filter(|(_,l)| !l.assigned && l.label_type != LabelType::Blocked) {
+        let _ = writeln!(output_file, "{} = ${:06X}", l.name, a);
     }
 
     Ok(())

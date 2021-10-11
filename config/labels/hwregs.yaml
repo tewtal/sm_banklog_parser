@@ -1,0 +1,11 @@
+- addr: 0x002140
+  name: APUIO0
+
+- addr: 0x002141
+  name: APUIO1
+
+- addr: 0x002142
+  name: APUIO2
+
+- addr: 0x002143
+  name: APUIO3
