@@ -108,6 +108,16 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
                             } else {
                                 None
                             }
+                        },
+                        Opcode { addr_mode: AddrMode::Relative, .. } => {
+                            /* Branches */
+                            let label_addr = ((*addr as i64) + 2 + (((arg_addr & 0xFF) as i8)) as i64) as u64;
+                            Some(Label {
+                                address: label_addr,
+                                name: format!("BRA_{:06X}", label_addr),
+                                label_type: LabelType::Branch,
+                                assigned: false
+                            })                            
                         }
                         _ => None
                     },
@@ -143,9 +153,13 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
             };
 
             if let Some(label) = label {
-                if !labels.contains_key(&(label.address - 1)) && !labels.contains_key(&(label.address + 1)) && 
-                   !labels.contains_key(&(label.address - 2)) && !labels.contains_key(&(label.address + 2)) {
-                       labels.entry(label.address).or_insert(label);
+                if label.label_type == LabelType::Subroutine || label.label_type == LabelType::Branch {
+                    labels.entry(label.address).or_insert(label);
+                } else {
+                    if !labels.contains_key(&(label.address - 1)) && !labels.contains_key(&(label.address + 1)) && 
+                       !labels.contains_key(&(label.address - 2)) && !labels.contains_key(&(label.address + 2)) {
+                            labels.entry(label.address).or_insert(label);
+                    } 
                 }
             }
         }

@@ -23,15 +23,25 @@ impl Code {
         /* Make sure to handle PC-relative addresses correctly */
         match self.arg {
             ArgType::Address(addr) => {
-                let label_addr = match self.length {
-                    1 => 0x7E0000 | (addr & 0xFF),
-                    2 => match addr {
-                        0..=0x1FFF => 0x7E0000 | (addr & 0xFFFF),
-                        0x2000..=0x7FFF => (addr & 0xFFFF),
-                        _ => ((self.db as u64) << 16) | (addr & 0xFFFF)
+                let label_addr = match self.opcode.addr_mode {
+                    AddrMode::Relative => {
+                        ((self.address as i64) + 2 + (((addr & 0xFF) as i8)) as i64) as u64
                     },
-                    3 => addr,
-                    _ => panic!("Invalid argument length")
+                    AddrMode::RelativeLong => {
+                        ((self.address as i64) + 2 + (((addr & 0xFFFF) as i16)) as i64) as u64
+                    },
+                    _ => {
+                        match self.length {
+                            1 => 0x7E0000 | (addr & 0xFF),
+                            2 => match addr {
+                                0..=0x1FFF => 0x7E0000 | (addr & 0xFFFF),
+                                0x2000..=0x7FFF => (addr & 0xFFFF),
+                                _ => ((self.db as u64) << 16) | (addr & 0xFFFF)
+                            },
+                            3 => addr,
+                            _ => panic!("Invalid argument length")
+                        }
+                    }
                 };
 
                 let labels = label::LABELS.lock().unwrap();
@@ -40,14 +50,22 @@ impl Code {
                     if label_addr > 0x808000 {
                         if labels.contains_key(&label_addr) {
                             (Some(&labels[&label_addr]), 0)
-                        } else if labels.contains_key(&(label_addr - 1)) {
-                            (Some(&labels[&(label_addr - 1)]), -1)
-                        } else if labels.contains_key(&(label_addr + 1)) {
-                            (Some(&labels[&(label_addr + 1)]), 1)
-                        } else if labels.contains_key(&(label_addr - 2)) {
-                            (Some(&labels[&(label_addr - 2)]), -2)
-                        } else if labels.contains_key(&(label_addr + 2)) {
-                            (Some(&labels[&(label_addr + 2)]), 2)
+                        } else if self.opcode.addr_mode != AddrMode::Relative &&
+                                  self.opcode.addr_mode != AddrMode::RelativeLong &&
+                                  self.opcode.name != "JSR" &&
+                                  self.opcode.name != "JSL"
+                            {
+                            if labels.contains_key(&(label_addr - 1)) {
+                                (Some(&labels[&(label_addr - 1)]), -1)
+                            } else if labels.contains_key(&(label_addr + 1)) {
+                                (Some(&labels[&(label_addr + 1)]), 1)
+                            } else if labels.contains_key(&(label_addr - 2)) {
+                                (Some(&labels[&(label_addr - 2)]), -2)
+                            } else if labels.contains_key(&(label_addr + 2)) {
+                                (Some(&labels[&(label_addr + 2)]), 2)
+                            } else {
+                                (None, 0)                         
+                            }
                         } else {
                             (None, 0)    
                         }
