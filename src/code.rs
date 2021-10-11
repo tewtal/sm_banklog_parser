@@ -36,32 +36,51 @@ impl Code {
 
                 let labels = label::LABELS.lock().unwrap();
 
-                // TODO: Change this temp hack so that labels outside of bank 80 can be used
-                if label_addr > 0x808000 && self.opcode.addr_mode != AddrMode::Immediate {
-                    if labels.contains_key(&label_addr) && labels[&label_addr].label_type != LabelType::Blocked {
-                        labels[&label_addr].name.to_string()
-                    } else if labels.contains_key(&(label_addr - 1)) && labels[&(label_addr - 1)].label_type != LabelType::Blocked {
-                        format!("{}+1", labels[&(label_addr - 1)].name)
-                    } else if labels.contains_key(&(label_addr + 1)) && labels[&(label_addr + 1)].label_type != LabelType::Blocked {
-                        format!("{}-1", labels[&(label_addr + 1)].name)
-                    } else if labels.contains_key(&(label_addr - 2)) && labels[&(label_addr - 2)].label_type != LabelType::Blocked {
-                        format!("{}+2", labels[&(label_addr - 2)].name)
-                    } else if labels.contains_key(&(label_addr + 2)) && labels[&(label_addr + 2)].label_type != LabelType::Blocked {
-                        format!("{}-2", labels[&(label_addr + 2)].name)
+                let label = {
+                    if label_addr > 0x808000 {
+                        if labels.contains_key(&label_addr) {
+                            (Some(&labels[&label_addr]), 0)
+                        } else if labels.contains_key(&(label_addr - 1)) {
+                            (Some(&labels[&(label_addr - 1)]), -1)
+                        } else if labels.contains_key(&(label_addr + 1)) {
+                            (Some(&labels[&(label_addr + 1)]), 1)
+                        } else if labels.contains_key(&(label_addr - 2)) {
+                            (Some(&labels[&(label_addr - 2)]), -2)
+                        } else if labels.contains_key(&(label_addr + 2)) {
+                            (Some(&labels[&(label_addr + 2)]), 2)
+                        } else {
+                            (None, 0)    
+                        }
                     } else {
+                        (None, 0)
+                    }
+                };
+
+                match label {
+                    (Some(l), offset) => {
+                        if ((l.name.starts_with("IMM") && self.opcode.addr_mode == AddrMode::Immediate) || self.opcode.addr_mode != AddrMode::Immediate) && l.label_type != LabelType::Blocked {
+                            match offset {
+                                0 => l.name.to_string(),
+                                -1 | -2 => format!("{}+{}", l.name, -offset),
+                                1 | 2 => format!("{}{}", l.name, -offset),
+                                _ => panic!("Invalid argument length")
+                            }
+                        } else {
+                            match self.length {
+                                1 => format!("${:02X}", addr),
+                                2 => format!("${:04X}", addr),
+                                3 => format!("${:06X}", addr),
+                                _ => panic!("Invalid argument length")
+                            }                                
+                        }
+                    },
+                    (None, _) => {
                         match self.length {
                             1 => format!("${:02X}", addr),
                             2 => format!("${:04X}", addr),
                             3 => format!("${:06X}", addr),
                             _ => panic!("Invalid argument length")
-                        }                       
-                    }
-                } else {
-                    match self.length {
-                        1 => format!("${:02X}", addr),
-                        2 => format!("${:04X}", addr),
-                        3 => format!("${:06X}", addr),
-                        _ => panic!("Invalid argument length")
+                        }                        
                     }
                 }
             },

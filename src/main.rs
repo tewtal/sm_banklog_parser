@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut cur_addr = 0x008000 | ((bank_group.0 as u64) << 16);
         
         /* Parse the full file into data */
-        for (addr, line) in reader.lines().flatten().map(|l| Line::parse(&l)) {
+        for (addr, line) in reader.lines().flatten().map(|l| Line::parse(&l, &config)) {
             cur_addr = addr.unwrap_or(cur_addr);
             lines.entry(cur_addr).or_insert_with(Vec::new).push(line);
         }

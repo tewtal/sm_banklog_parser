@@ -89,6 +89,25 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
                                  label_type: LabelType::DataTable(0),
                                  assigned: false
                              })                              
+                        },
+                        Opcode { addr_mode: AddrMode::Immediate, .. } => {
+                            /* For now, only do this with overrides */
+                            if let Some(ov) = config.get_override(*addr) {
+                                if ov._type.as_ref().unwrap_or(&"".to_string()) == "Pointer" {
+                                    let db = ov.db.unwrap_or(addr >> 16);
+                                    let label_addr = (arg_addr & 0xFFFF_u64) | (db << 16);
+                                    Some(Label {
+                                        address: label_addr,
+                                        name: format!("IMM_{:06X}", label_addr),
+                                        label_type: LabelType::DataTable(0),
+                                        assigned: false
+                                    })
+                                } else {
+                                    None
+                                }
+                            } else {
+                                None
+                            }
                         }
                         _ => None
                     },

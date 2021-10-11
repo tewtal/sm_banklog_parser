@@ -12,3 +12,17 @@
 - addr: [0x918014, 0x91804B]
   type: Pointer
   db: 0x91
+
+- addr: [0x809616, 0x809631]
+  type: Pointer
+  db: 0x80
+
+
+# Overrides immediate opcodes in bank 80 to be pointers
+- addr: 0x809B56
+  type: Pointer
+  db: 0x80
+
+- addr: 0x809B5E
+  type: Pointer
+  db: 0x80

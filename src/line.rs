@@ -41,9 +41,7 @@ impl Line {
 }
 
 impl Line {
-
-
-    pub fn parse(line: &str) -> (Option<u64>, Line) {
+    pub fn parse(line: &str, _config: &Config) -> (Option<u64>, Line) {
         if let Some(cap) = COMMENT_REGEX.captures(line) {
             (None, Line::Comment(format!(";{}", &cap[1])))
         }
