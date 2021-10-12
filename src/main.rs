@@ -118,11 +118,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if bank != cur_bank {
             let _ = writeln!(output_file, "check bankcross on");
 
-            let first_address = lines.iter().find(|(k, v)| **k >= (((bank as u64) << 16) | 0x8000) && v.iter().any(|l| matches!(l, Line::Code(_) | Line::Data(_)))).unwrap();
+            let first_entry = lines.iter().find(|(k, v)| **k >= (((bank as u64) << 16) | 0x8000) && v.iter().any(|l| matches!(l, Line::Code(_) | Line::Data(_)))).unwrap();
+            let first_address = if (first_entry.0 >> 16) == bank as u64 { first_entry.0 } else { addr };
 
             cur_bank = bank;
             output_file = File::create(format!("./asm/bank_{:02X}.asm", cur_bank)).unwrap();
-            let _ = writeln!(output_file, "org ${:06X}\ncheck bankcross off", first_address.0);
+            let _ = writeln!(output_file, "org ${:06X}\ncheck bankcross off", first_address);
         }
         
         {
