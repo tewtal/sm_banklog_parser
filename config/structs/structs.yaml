@@ -10,3 +10,19 @@
     - { name: ScreenY, offset: 8, length: 2, type: Data }
     - { name: SamusY, offset: 10, length: 2, type: Data }
     - { name: SamusX, offset: 12, length: 2, type: Data }
+
+
+- name: FX
+  fields:
+    - { name: DoorPtr, offset: 0, length: 2, type: Pointer, db: 0x83 }
+    - { name: BaseY, offset: 2, length: 2, type: Data }
+    - { name: TargetY, offset: 4, length: 2, type: Data }
+    - { name: YVelocity, offset: 6, length: 2, type: Data }
+    - { name: Timer, offset: 8, length: 1, type: Data }
+    - { name: Type, offset: 9, length: 1, type: Data }
+    - { name: FXA, offset: 10, length: 1, type: Data }
+    - { name: FXB, offset: 11, length: 1, type: Data }
+    - { name: FXC, offset: 12, length: 1, type: Data }
+    - { name: PaletteFX, offset: 13, length: 1, type: Data }
+    - { name: AnimTiles, offset: 14, length: 1, type: Data }
+    - { name: PaletteBlend, offset: 15, length: 1, type: Data }

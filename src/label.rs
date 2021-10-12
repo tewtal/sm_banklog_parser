@@ -218,8 +218,18 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
                                         if (label_addr & 0xFFFF) >= 0x8000 {
                                             labels.entry(label_addr).or_insert(Label { 
                                                 address: label_addr, 
-                                                name: format!("SUB_{:06X}", label_addr), label_type: LabelType::Subroutine, assigned: false });
+                                                name: format!("{}_{:04X}", field.name, label_addr & 0xFFFF_u64), label_type: LabelType::Subroutine, assigned: false });
                                         }
+                                    }
+                                    if cur_st_offset == 0 {
+                                        labels.entry(cur_pc)
+                                            .and_modify(|l| l.name = format!("{}_{:04X}", st.name, cur_pc & 0xFFFF_u64))
+                                            .or_insert(Label {
+                                                address: cur_pc,
+                                                name: format!("{}_{:04X}", st.name, cur_pc & 0xFFFF_u64),
+                                                label_type: LabelType::DataTable(0),
+                                                assigned: false
+                                            });
                                     }
                                 }
                             }

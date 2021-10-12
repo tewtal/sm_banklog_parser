@@ -59,3 +59,42 @@
 - addr: [0x8182D6, 0x8182E3]
   type: Pointer
   db: 0x81
+
+# FX data
+- addr: [0x838000, 0x83810F]
+  type: Struct
+  struct: FX
+
+- addr: [0x838112, 0x838141]
+  type: Struct
+  struct: FX
+
+- addr: [0x838144, 0x838153]
+  type: Struct
+  struct: FX
+
+- addr: [0x838156, 0x838165]
+  type: Struct
+  struct: FX
+
+- addr: [0x83816A, 0x838179]
+  type: Struct
+  struct: FX
+
+- addr: [0x83817C, 0x83818B]
+  type: Struct
+  struct: FX
+
+- addr: [0x83818E, 0x8381BD]
+  type: Struct
+  struct: FX
+
+
+# PLM Things
+- addr: [0x84C70A, 0x84C719]
+  type: Pointer
+  db: 0x84
+  
+- addr: [0x84EED3, 0x84EFD2]
+  type: Pointer
+  db: 0x84
