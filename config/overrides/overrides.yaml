@@ -33,11 +33,29 @@
   type: Pointer
   db: 0x80
 
+- addr: [0x80AE76, 0x80AE7D]
+  type: Pointer
+  db: 0x80
+
+- addr: [0x80AE08, 0x80AE0F]
+  type: Pointer
+  db: 0x80
+
+# Elevator bits
+- addr: [0x80CD46, 0x80CD51]
+  type: Pointer
+  db: 0x80
+
 # Savestation data
 - addr: [0x80C4B5, 0x80C4C4]
   type: Pointer
   db: 0x80
-  
+
 - addr: [0x80C4C5, 0x80CD06]
   type: Struct
   struct: SaveStationData
+
+# map rooms
+- addr: [0x8182D6, 0x8182E3]
+  type: Pointer
+  db: 0x81
