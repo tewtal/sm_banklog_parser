@@ -110,12 +110,12 @@ impl ToString for Code {
     fn to_string(&self) -> String {
         let opcode = match self.opcode.addr_mode {
             AddrMode::Absolute =>                       format!("{}.w {}", self.opcode.name, self.arg_label()),
-            AddrMode::AbsoluteIndexedIndirect =>        format!("{} ({},X)", self.opcode.name, self.arg_label()),
+            AddrMode::AbsoluteIndexedIndirect =>        format!("{}.w ({},X)", self.opcode.name, self.arg_label()),
             AddrMode::AbsoluteIndexedLong =>            format!("{}.l {},X", self.opcode.name, self.arg_label()),
             AddrMode::AbsoluteIndexedX =>               format!("{}.w {},X", self.opcode.name, self.arg_label()),
             AddrMode::AbsoluteIndexedY =>               format!("{}.w {},Y", self.opcode.name, self.arg_label()),
-            AddrMode::AbsoluteIndirect =>               format!("{} ({})", self.opcode.name, self.arg_label()),
-            AddrMode::AbsoluteIndirectLong =>           format!("{} [{}]", self.opcode.name, self.arg_label()),
+            AddrMode::AbsoluteIndirect =>               format!("{}.w ({})", self.opcode.name, self.arg_label()),
+            AddrMode::AbsoluteIndirectLong =>           format!("{}.w [{}]", self.opcode.name, self.arg_label()),
             AddrMode::AbsoluteLong =>                   format!("{}.l {}", self.opcode.name, self.arg_label()),
             AddrMode::BlockMove =>                      format!("{} {}", self.opcode.name, self.arg_label()),
             AddrMode::Direct =>                         format!("{}.b {}", self.opcode.name, self.arg_label()),
@@ -129,10 +129,10 @@ impl ToString for Code {
             AddrMode::Immediate =>                      format!("{}.{} #{}", self.opcode.name, if self.length == 1 { "b" } else { "w" }, self.arg_label()),
             AddrMode::ImmediateByte =>                  format!("{}.b #{}", self.opcode.name, self.arg_label()),
             AddrMode::Implied =>                        self.opcode.name.to_string(),
-            AddrMode::Relative =>                       format!("{} {}", self.opcode.name, self.arg_label()),
-            AddrMode::RelativeLong =>                   format!("{} {}", self.opcode.name, self.arg_label()),
-            AddrMode::StackRelative =>                  format!("{} {},S", self.opcode.name, self.arg_label()),
-            AddrMode::StackRelativeIndirectIndexed =>   format!("{} ({},S),Y", self.opcode.name, self.arg_label()),
+            AddrMode::Relative =>                       format!("{}.b {}", self.opcode.name, self.arg_label()),
+            AddrMode::RelativeLong =>                   format!("{}.w {}", self.opcode.name, self.arg_label()),
+            AddrMode::StackRelative =>                  format!("{}.b {},S", self.opcode.name, self.arg_label()),
+            AddrMode::StackRelativeIndirectIndexed =>   format!("{}.b ({},S),Y", self.opcode.name, self.arg_label()),
         };
 
         format!("    {:<40};| {:06X} | {:02X} | {}", opcode, self.address, self.db, self.comment.as_ref().unwrap_or(&"".to_owned()))

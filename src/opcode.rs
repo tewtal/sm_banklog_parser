@@ -237,7 +237,7 @@ lazy_static! {
         0x5C => Opcode::new(0x5C, "JML", AddrMode::AbsoluteLong),
         0x6C => Opcode::new(0x6C, "JMP", AddrMode::AbsoluteIndirect),
         0x7C => Opcode::new(0x7C, "JMP", AddrMode::AbsoluteIndexedIndirect),
-        0xDC => Opcode::new(0xDC, "JMP", AddrMode::AbsoluteIndirectLong),
+        0xDC => Opcode::new(0xDC, "JML", AddrMode::AbsoluteIndirectLong),
 
         0x20 => Opcode::new(0x20, "JSR", AddrMode::Absolute),
         0x22 => Opcode::new(0x22, "JSL", AddrMode::AbsoluteLong),

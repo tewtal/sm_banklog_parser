@@ -118,6 +118,20 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
                                 label_type: LabelType::Branch,
                                 assigned: false
                             })                            
+                        },
+                        Opcode { addr_mode: AddrMode::Absolute, .. } => {
+                            let label_addr = arg_addr & 0xFFFF_u64;
+                            let (label_addr, prefix) = match label_addr {
+                                0x100..=0x1FFF => (0x7E0000 | (label_addr & 0xFFFF), "LORAM"),
+                                0x2000..=0x7FFF => ((label_addr & 0xFFFF), "HWREG"),
+                                _ => (((c.db as u64) << 16) | (label_addr & 0xFFFF), "DAT")
+                            };
+                            Some(Label {
+                                address: label_addr,
+                                name: format!("{}_{:06X}", prefix, label_addr),
+                                label_type: LabelType::Data,
+                                assigned: false
+                            })                               
                         }
                         _ => None
                     },
@@ -153,7 +167,7 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
             };
 
             if let Some(label) = label {
-                if label.label_type == LabelType::Subroutine || label.label_type == LabelType::Branch {
+                if label.label_type == LabelType::Subroutine || label.label_type == LabelType::Branch || (label.address & 0xFFFF_u64) < 0x8000 {
                     labels.entry(label.address).or_insert(label);
                 } else {
                     if !labels.contains_key(&(label.address - 1)) && !labels.contains_key(&(label.address + 1)) && 
