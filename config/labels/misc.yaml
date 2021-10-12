@@ -43,3 +43,11 @@
 - addr: 0xB88008
   name: BLK_B88008
   type: Blocked
+
+# Test stuff
+
+- addr: 0x908324
+  name: AnimDelayPtrs
+  type: PointerTable
+  length: 16
+

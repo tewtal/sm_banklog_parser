@@ -61,7 +61,7 @@ impl Data {
             if_chain! {
                 if let Some(ov) = config.get_override(cur_pc);
                 if let Some(t) = &ov._type;
-                if t == "Pointer";
+                if t == "Pointer" || t == "Data";
                 then {
                     let db = ov.db.unwrap_or(cur_pc >> 16);
                     let label_addr = (d.as_u64() & 0xFFFF_u64) | (db << 16);

@@ -35,7 +35,7 @@ impl Line {
         match self {
             Line::Comment(s) => s.to_string(),
             Line::Data(d) => d.to_string(config),
-            Line::Code(c) => c.to_string()
+            Line::Code(c) => c.to_string(config)
         }
     }
 }

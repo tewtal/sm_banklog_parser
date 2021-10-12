@@ -13,3 +13,4 @@
 - { addr: 0x808079, name: .gotResponse }
 
 
+- { addr: 0x80998B, name: GfxAutoReserve }

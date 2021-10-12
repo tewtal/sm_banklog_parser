@@ -58,15 +58,30 @@ impl Config {
             .map(|f| serde_yaml::from_str::<Vec<Label>>(&std::fs::read_to_string(f).unwrap()).unwrap())
             .flatten().collect();
 
-            let override_filenames = glob(&format!("{}/overrides/*.yaml", path)).unwrap();        
-            let overrides: Vec<Override> = override_filenames.flatten()
-                .map(|f| serde_yaml::from_str::<Vec<Override>>(&std::fs::read_to_string(f).unwrap()).unwrap())
-                .flatten().collect();
+        let override_filenames = glob(&format!("{}/overrides/*.yaml", path)).unwrap();        
+        let mut overrides: Vec<Override> = override_filenames.flatten()
+            .map(|f| serde_yaml::from_str::<Vec<Override>>(&std::fs::read_to_string(f).unwrap()).unwrap())
+            .flatten().collect();
 
-            let struct_filenames = glob(&format!("{}/structs/*.yaml", path)).unwrap();        
-            let structs: Vec<Struct> = struct_filenames.flatten()
-                .map(|f| serde_yaml::from_str::<Vec<Struct>>(&std::fs::read_to_string(f).unwrap()).unwrap())
-                .flatten().collect();
+        let struct_filenames = glob(&format!("{}/structs/*.yaml", path)).unwrap();        
+        let structs: Vec<Struct> = struct_filenames.flatten()
+            .map(|f| serde_yaml::from_str::<Vec<Struct>>(&std::fs::read_to_string(f).unwrap()).unwrap())
+            .flatten().collect();
+
+        /* Generate overrides from pointer labels with a length defined */
+        let mut generated_overrides: Vec<Override> = labels.iter()
+            .filter(|l| {
+                let label_type = l.label_type.clone().unwrap_or("".to_string());
+                (label_type == "PointerTable" || label_type == "DataTable") && l.length.unwrap_or(0) > 1
+            })
+            .map(|l| Override {
+                addr: OverrideAddr::Range(vec![l.addr, l.addr + (l.length.unwrap() * 2)]),
+                db: Some(l.addr >> 16),
+                _struct: None,
+                _type: Some(if l.label_type.clone().unwrap() == "PointerTable" { "Pointer".to_string() } else { "Data".to_string() }),
+                opcode: None
+            }).collect();
+        overrides.append(&mut generated_overrides);
 
         Config { labels, overrides, structs }
     }
