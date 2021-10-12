@@ -129,8 +129,8 @@ impl ToString for Code {
             AddrMode::Immediate =>                      format!("{}.{} #{}", self.opcode.name, if self.length == 1 { "b" } else { "w" }, self.arg_label()),
             AddrMode::ImmediateByte =>                  format!("{}.b #{}", self.opcode.name, self.arg_label()),
             AddrMode::Implied =>                        self.opcode.name.to_string(),
-            AddrMode::Relative =>                       format!("{}.b {}", self.opcode.name, self.arg_label()),
-            AddrMode::RelativeLong =>                   format!("{}.w {}", self.opcode.name, self.arg_label()),
+            AddrMode::Relative =>                       format!("{} {}", self.opcode.name, self.arg_label()),
+            AddrMode::RelativeLong =>                   format!("{} {}", self.opcode.name, self.arg_label()),
             AddrMode::StackRelative =>                  format!("{}.b {},S", self.opcode.name, self.arg_label()),
             AddrMode::StackRelativeIndirectIndexed =>   format!("{}.b ({},S),Y", self.opcode.name, self.arg_label()),
         };

@@ -119,12 +119,16 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
                                 assigned: false
                             })                            
                         },
-                        Opcode { addr_mode: AddrMode::Absolute, .. } => {
-                            let label_addr = arg_addr & 0xFFFF_u64;
-                            let (label_addr, prefix) = match label_addr {
-                                0x100..=0x1FFF => (0x7E0000 | (label_addr & 0xFFFF), "LORAM"),
-                                0x2000..=0x7FFF => ((label_addr & 0xFFFF), "HWREG"),
-                                _ => (((c.db as u64) << 16) | (label_addr & 0xFFFF), "DAT")
+                        Opcode { addr_mode: AddrMode::Absolute, .. } |
+                        Opcode { addr_mode: AddrMode::AbsoluteLong, .. } => {
+                            let bank = arg_addr >> 16;
+                            let low_addr = arg_addr & 0xFFFF_u64;
+                            let (label_addr, prefix) = match low_addr {
+                                0x100..=0x1FFF if (bank < 0x70 || bank > 0x7F) || bank == 0x7E => (0x7E0000 | (low_addr & 0xFFFF), "LORAM"),
+                                0x2000..=0x7FFF if bank < 0x40 || bank >= 0x80 => ((low_addr & 0xFFFF), "HWREG"),
+                                _ if bank == 0x7E || bank == 0x7F => (arg_addr, "WRAM"),
+                                _ if bank >= 0x70 && bank < 0x7E => (arg_addr, "SRAM"),
+                                _ => (arg_addr, "DAT")
                             };
                             Some(Label {
                                 address: label_addr,
@@ -132,7 +136,7 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
                                 label_type: LabelType::Data,
                                 assigned: false
                             })                               
-                        }
+                        },
                         _ => None
                     },
                     _ => None
