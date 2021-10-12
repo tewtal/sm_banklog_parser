@@ -3,3 +3,4 @@
 /asm/*.asm
 asar*
 *.sfc
+*.sym

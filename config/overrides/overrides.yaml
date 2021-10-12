@@ -7,9 +7,6 @@
 #
 # db is optional, and will be set to the same bank as the address if not defined for data, or the "guessed" db in case of code
 
-# Sets the reset vectors to pointers
-- addr: [0x80FFE0, 0x80FFFF]
-  type: Pointer
 
 - addr: [0x918014, 0x91804B]
   type: Pointer
@@ -18,42 +15,6 @@
 - addr: [0x809616, 0x809631]
   type: Pointer
   db: 0x80
-
-
-# Overrides immediate opcodes in bank 80 to be pointers
-- addr: 0x809B56
-  type: Data
-  db: 0x80
-
-- addr: 0x809B5E
-  type: Data
-  db: 0x80
-
-- addr: 0x808980
-  type: Pointer
-  db: 0x80
-
-- addr: [0x80AE76, 0x80AE7D]
-  type: Pointer
-  db: 0x80
-
-- addr: [0x80AE08, 0x80AE0F]
-  type: Pointer
-  db: 0x80
-
-# Elevator bits
-- addr: [0x80CD46, 0x80CD51]
-  type: Pointer
-  db: 0x80
-
-# Savestation data
-- addr: [0x80C4B5, 0x80C4C4]
-  type: Pointer
-  db: 0x80
-
-- addr: [0x80C4C5, 0x80CD06]
-  type: Struct
-  struct: SaveStationData
 
 # map rooms
 - addr: [0x8182D6, 0x8182E3]

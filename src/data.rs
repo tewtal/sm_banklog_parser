@@ -59,36 +59,19 @@ impl Data {
             }
 
             if_chain! {
-                if let Some(ov) = config.get_override(cur_pc);
-                if let Some(t) = &ov._type;
-                if t == "Pointer" || t == "Data";
+                if let DataVal::DL(dl) = d;
+                if labels.contains_key(&(*dl as u64));
                 then {
-                    let db = ov.db.unwrap_or(cur_pc >> 16);
-                    let label_addr = (d.as_u64() & 0xFFFF_u64) | (db << 16);
-                    if labels.contains_key(&label_addr) {
-                        output.push_str(&format!("{}{}", if first_val { "" } else { "," }, labels[&label_addr].name));
-                    } else {
-                        match d {                
-                            DataVal::DB(db) => output.push_str(&format!("{}${:02X}", if first_val { "" } else { "," }, db)),
-                            DataVal::DW(dw) => output.push_str(&format!("{}${:04X}", if first_val { "" } else { "," }, dw)),
-                            DataVal::DL(dl) => output.push_str(&format!("{}${:06X}", if first_val { "" } else { "," }, dl)),
-                        }       
-                    }                                 
+                    output.push_str(&format!("{}{}", if first_val { "" } else { "," }, labels[&(*dl as u64)].name));
                 } else {
                     if_chain! {
                         if let Some(ov) = config.get_override(cur_pc);
                         if let Some(t) = &ov._type;
-                        if t == "Struct";
-                        if let Some(st) = config.structs.iter().find(|s| &s.name == ov._struct.as_ref().unwrap_or(&"".to_string()));
+                        if t == "Pointer" || t == "Data";
                         then {
-                            let last_field = &st.fields[st.fields.len() - 1];
-                            let st_len = last_field.offset + last_field.length;
-                            let cur_offset = cur_pc - self.address;
-                            let cur_st_offset = cur_offset % st_len;
-                            let field = &st.fields.iter().find(|f| f.offset == cur_st_offset).unwrap();
-                            let db = field.db.unwrap_or(cur_pc >> 16);                                    
-                            let label_addr = if field.length < 3 { (d.as_u64() & 0xFFFF_u64) | (db << 16) } else { d.as_u64() };
-                            if field._type == "Pointer" && (label_addr & 0xFFFF_u64) >= 0x8000 && labels.contains_key(&label_addr) {
+                            let db = ov.db.unwrap_or(cur_pc >> 16);
+                            let label_addr = (d.as_u64() & 0xFFFF_u64) | (db << 16);
+                            if labels.contains_key(&label_addr) {
                                 output.push_str(&format!("{}{}", if first_val { "" } else { "," }, labels[&label_addr].name));
                             } else {
                                 match d {                
@@ -96,12 +79,37 @@ impl Data {
                                     DataVal::DW(dw) => output.push_str(&format!("{}${:04X}", if first_val { "" } else { "," }, dw)),
                                     DataVal::DL(dl) => output.push_str(&format!("{}${:06X}", if first_val { "" } else { "," }, dl)),
                                 }       
-                            }                                         
+                            }                                 
                         } else {
-                            match d {                
-                                DataVal::DB(db) => output.push_str(&format!("{}${:02X}", if first_val { "" } else { "," }, db)),
-                                DataVal::DW(dw) => output.push_str(&format!("{}${:04X}", if first_val { "" } else { "," }, dw)),
-                                DataVal::DL(dl) => output.push_str(&format!("{}${:06X}", if first_val { "" } else { "," }, dl)),
+                            if_chain! {
+                                if let Some(ov) = config.get_override(cur_pc);
+                                if let Some(t) = &ov._type;
+                                if t == "Struct";
+                                if let Some(st) = config.structs.iter().find(|s| &s.name == ov._struct.as_ref().unwrap_or(&"".to_string()));
+                                then {
+                                    let last_field = &st.fields[st.fields.len() - 1];
+                                    let st_len = last_field.offset + last_field.length;
+                                    let cur_offset = cur_pc - self.address;
+                                    let cur_st_offset = cur_offset % st_len;
+                                    let field = &st.fields.iter().find(|f| f.offset == cur_st_offset).unwrap();
+                                    let db = field.db.unwrap_or(cur_pc >> 16);                                    
+                                    let label_addr = if field.length < 3 { (d.as_u64() & 0xFFFF_u64) | (db << 16) } else { d.as_u64() };
+                                    if field._type == "Pointer" && (label_addr & 0xFFFF_u64) >= 0x8000 && labels.contains_key(&label_addr) {
+                                        output.push_str(&format!("{}{}", if first_val { "" } else { "," }, labels[&label_addr].name));
+                                    } else {
+                                        match d {                
+                                            DataVal::DB(db) => output.push_str(&format!("{}${:02X}", if first_val { "" } else { "," }, db)),
+                                            DataVal::DW(dw) => output.push_str(&format!("{}${:04X}", if first_val { "" } else { "," }, dw)),
+                                            DataVal::DL(dl) => output.push_str(&format!("{}${:06X}", if first_val { "" } else { "," }, dl)),
+                                        }       
+                                    }                                         
+                                } else {
+                                    match d {                
+                                        DataVal::DB(db) => output.push_str(&format!("{}${:02X}", if first_val { "" } else { "," }, db)),
+                                        DataVal::DW(dw) => output.push_str(&format!("{}${:04X}", if first_val { "" } else { "," }, dw)),
+                                        DataVal::DL(dl) => output.push_str(&format!("{}${:06X}", if first_val { "" } else { "," }, dl)),
+                                    }
+                                }
                             }
                         }
                     }
