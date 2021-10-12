@@ -159,6 +159,31 @@ pub fn generate_labels(lines: &BTreeMap<u64, Vec<Line>>, config: &Config) {
                                     name: format!("SUB_{:06X}", label_addr), label_type: LabelType::Subroutine, assigned: false });
                             }
                         }
+
+                        if_chain! {
+                            if let Some(ov) = config.get_override(cur_pc);
+                            if let Some(t) = &ov._type;
+                            if t == "Struct";
+                            then {
+                                if let Some(st) = config.structs.iter().find(|s| &s.name == ov._struct.as_ref().unwrap_or(&"".to_string())) {                                    
+                                    let last_field = &st.fields[st.fields.len() - 1];
+                                    let st_len = last_field.offset + last_field.length;
+                                    let cur_offset = cur_pc - data.address;
+                                    let cur_st_offset = cur_offset % st_len;
+                                    let field = &st.fields.iter().find(|f| f.offset == cur_st_offset).unwrap();
+                                    if field._type == "Pointer" {
+                                        let db = field.db.unwrap_or(cur_pc >> 16);                                    
+                                        let label_addr = if field.length < 3 { (d.as_u64() & 0xFFFF_u64) | (db << 16) } else { d.as_u64() };
+                                        if (label_addr & 0xFFFF) >= 0x8000 {
+                                            labels.entry(label_addr).or_insert(Label { 
+                                                address: label_addr, 
+                                                name: format!("SUB_{:06X}", label_addr), label_type: LabelType::Subroutine, assigned: false });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         cur_pc += data_len;
                     }
                     None                    

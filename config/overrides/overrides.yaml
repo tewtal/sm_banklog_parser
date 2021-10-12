@@ -28,3 +28,16 @@
 - addr: 0x809B5E
   type: Pointer
   db: 0x80
+
+- addr: 0x808980
+  type: Pointer
+  db: 0x80
+
+# Savestation data
+- addr: [0x80C4B5, 0x80C4C4]
+  type: Pointer
+  db: 0x80
+  
+- addr: [0x80C4C5, 0x80CD06]
+  type: Struct
+  struct: SaveStationData
